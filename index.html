@@ -90,6 +90,8 @@ button:hover{border-color:var(--accent)}
 .mono{font-variant-numeric:tabular-nums}
 .err{color:var(--gap);font-weight:600}
 #gnote{min-height:2.9em}
+.tmid{margin-left:auto;font-size:12px;font-weight:600;color:var(--accent);background:var(--band);border-radius:6px;padding:1px 8px;font-variant-numeric:tabular-nums}
+.tmid:empty{display:none}
 .ct-h{font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px;margin-bottom:4px}
 .ct-row{display:grid;grid-template-columns:46px 1fr 88px;align-items:center;gap:8px;font-size:12px;margin:3px 0}
 .ct-bar{height:10px;border-radius:5px;background:var(--line);overflow:hidden}
@@ -159,7 +161,7 @@ button:hover{border-color:var(--accent)}
   </div>
 
   <div class="card">
-    <h2><span data-i18n="c2">② 目标游隙范围（µm）</span><span class="tip" data-i18n-title="c2hint">i</span></h2>
+    <h2><span data-i18n="c2">② 目标游隙范围（µm）</span><span class="tip" data-i18n-title="c2hint">i</span><span id="tmid" class="tmid"></span></h2>
     <div class="row2">
       <div><label data-i18n="loL">下限</label><input id="G_lo" type="number" step="1" value="5"></div>
       <div><label data-i18n="hiL">上限</label><input id="G_hi" type="number" step="1" value="20"></div>
@@ -246,6 +248,7 @@ zh:{
   h1:'深沟球轴承 · 原始径向游隙计算与可视化',
   sub:'输入图纸沟径与钢球直径，计算未安装状态的几何游隙（无载、20 °C）。纯本地运行，不联网、不上传。',
   ctT:'公差贡献', ctTip:'游隙变动范围 = De 公差带 + Di 公差带 + 2 × Dw 公差带（钢球在直径方向出现两次）。占比最大的一项（橙色）是控制游隙最有效的着力点。', ctSum:'合计 {v} µm = 最大 − 最小游隙', ctDw:'Dw ×2',
+  tMid:'中值 {v} µm',
   fBtn:'ƒ 公式', Zs:'钢球数 Z', Zhint:'仅用于画图',
   secTip:'偏差放大：ri−r、re−r 与游隙同比放大，接触角保持真实；钢球与套圈按真实比例，沟深按 0.2·Dw 示意。截面图按沟曲率公称值绘制，曲率公差带来的范围见结果表。Oi / Oe：内 / 外圈沟道曲率中心，推到底时接触线穿过 Oi、钢球中心和 Oe。',
   thAuto:'跟随系统', thLight:'☀ 浅色', thDark:'☾ 深色',
@@ -296,6 +299,7 @@ en:{
   h1:'Deep Groove Ball Bearing · Initial Radial Clearance',
   sub:'Enter the drawing groove diameters and ball diameter to get the unmounted geometric clearance (no load, 20 °C). Runs locally — nothing is uploaded.',
   ctT:'Tolerance contribution', ctTip:'Clearance spread = De tolerance band + Di tolerance band + 2 × Dw tolerance band (the ball appears twice across the diameter). The largest share (orange) is where tightening pays off most.', ctSum:'Total {v} µm = max − min clearance', ctDw:'Dw ×2',
+  tMid:'Mid {v} µm',
   fBtn:'ƒ Formulas', Zs:'Balls Z', Zhint:'drawing only',
   secTip:'Deviation ×: ri−r, re−r and the clearance are magnified equally, so the contact angle stays true; ball and rings are to scale; groove depth drawn as 0.2·Dw. The section uses nominal groove radii; ranges from radius tolerances are in the results table. Oi / Oe: inner / outer groove curvature centres; at full shift the contact line passes through Oi, the ball centre and Oe.',
   thAuto:'System', thLight:'☀ Light', thDark:'☾ Dark',
@@ -367,6 +371,10 @@ function calc(){
   $('gnom').innerHTML = bad?'–':fmt(gnom)+unit;
   $('gmin').innerHTML = bad?'–':fmt(gmin)+unit;
   $('gmax').innerHTML = bad?'–':fmt(gmax)+unit;
+
+  // 目标游隙中值
+  const midV=(lo+hi)/2;
+  $('tmid').textContent = (isFinite(lo)&&isFinite(hi)) ? t('tMid',{v: Number.isInteger(midV)?midV:midV.toFixed(1)}) : '';
 
   const v = $('verdict');
   if(bad){ v.className='verdict bad'; v.textContent=t('vBad'); }
