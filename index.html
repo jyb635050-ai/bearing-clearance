@@ -90,6 +90,10 @@ button:hover{border-color:var(--accent)}
 .mono{font-variant-numeric:tabular-nums}
 .err{color:var(--gap);font-weight:600}
 #gnote{min-height:2.9em}
+#typeSeg{flex:none;align-self:center}
+#typeSeg button{font-weight:700;padding:4px 12px}
+tr.only4p{display:none}
+html[data-type="4p"] tr.only4p{display:table-row}
 .gsep{width:1px;height:16px;background:var(--line);margin:0 4px}
 .geq{font-variant-numeric:tabular-nums;font-weight:600;color:var(--accent);background:var(--band);border-radius:6px;padding:1px 8px;white-space:nowrap}
 .geq.on{color:#fff;background:var(--accent)}
@@ -118,7 +122,7 @@ button:hover{border-color:var(--accent)}
   main .card{margin-bottom:0}
   #inputs{grid-row:1 / 3;display:flex;flex-direction:column;gap:10px;min-height:0;overflow:auto}
   #top{grid-column:2;min-height:0}
-  #barCard{flex:1 0 auto;display:flex;flex-direction:column}
+  #barCard{flex:1 1 0;min-height:150px;display:flex;flex-direction:column}
   #barCard svg{flex:1;min-height:0;max-height:100%}
   #sim{grid-column:2;min-height:0;display:flex;flex-direction:column}
   .viz{flex:1;min-height:0}
@@ -130,7 +134,8 @@ button:hover{border-color:var(--accent)}
 <body>
 <header>
   <div class="ttl">
-    <h1 data-i18n="h1">深沟球轴承 · 原始径向游隙计算与可视化</h1>
+    <div class="seg" role="group" aria-label="type" id="typeSeg"><button type="button" data-type-v="2p" data-i18n-title="type2pTip">2P</button><button type="button" data-type-v="4p" data-i18n-title="type4pTip">4P</button></div>
+    <h1 data-i18n="h1" data-i18n-4p="h1_4">深沟球轴承 · 原始径向游隙计算与可视化</h1>
     <span class="sub" data-i18n="sub">输入图纸沟径与钢球直径，计算未安装状态的几何游隙（无载、20 °C）。纯本地运行，不联网、不上传。</span>
   </div>
   <div class="toolbar">
@@ -154,17 +159,17 @@ button:hover{border-color:var(--accent)}
 <main>
 <section id="inputs">
   <div class="card">
-    <h2><span data-i18n="c1">① 图纸尺寸（mm）</span><span class="tip" data-i18n-title="c1hint">i</span></h2>
+    <h2><span data-i18n="c1">① 图纸尺寸（mm）</span><span class="tip" data-i18n-title="c1hint" data-i18n-title-4p="c1hint4">i</span></h2>
     <table class="in">
       <tr><th></th><th data-i18n="nomH">公称</th><th data-i18n="upH">上偏差</th><th data-i18n="loH">下偏差</th></tr>
-      <tr><td class="lbl" data-i18n="De">外圈沟径 De</td><td><input id="De" type="number" step="0.001" value="46.450"></td><td><input id="De_u" type="number" step="0.001" value="0.004"></td><td><input id="De_l" type="number" step="0.001" value="-0.004"></td></tr>
-      <tr><td class="lbl" data-i18n="Di">内圈沟径 Di</td><td><input id="Di" type="number" step="0.001" value="30.560"></td><td><input id="Di_u" type="number" step="0.001" value="0.004"></td><td><input id="Di_l" type="number" step="0.001" value="-0.004"></td></tr>
+      <tr><td class="lbl" data-i18n="De" data-i18n-4p="De4">外圈沟径 De</td><td><input id="De" type="number" step="0.001" value="46.450"></td><td><input id="De_u" type="number" step="0.001" value="0.004"></td><td><input id="De_l" type="number" step="0.001" value="-0.004"></td></tr>
+      <tr><td class="lbl" data-i18n="Di" data-i18n-4p="Di4">内圈沟径 Di</td><td><input id="Di" type="number" step="0.001" value="30.560"></td><td><input id="Di_u" type="number" step="0.001" value="0.004"></td><td><input id="Di_l" type="number" step="0.001" value="-0.004"></td></tr>
       <tr><td class="lbl" data-i18n="Dw">钢球直径 Dw</td><td><input id="Dw" type="number" step="0.0001" value="7.9375"></td><td><input id="Dw_u" type="number" step="0.0001" value="0.001"></td><td><input id="Dw_l" type="number" step="0.0001" value="-0.001"></td></tr>
     </table>
   </div>
 
   <div class="card">
-    <h2><span data-i18n="c2">② 目标游隙范围（µm）</span><span class="tip" data-i18n-title="c2hint">i</span><span id="tmid" class="tmid"></span></h2>
+    <h2><span data-i18n="c2" data-i18n-4p="c2_4">② 目标游隙范围（µm）</span><span class="tip" data-i18n-title="c2hint" data-i18n-title-4p="c2hint4">i</span><span id="tmid" class="tmid"></span></h2>
     <div class="row2">
       <div><label data-i18n="loL">下限</label><input id="G_lo" type="number" step="1" value="5"></div>
       <div><label data-i18n="hiL">上限</label><input id="G_hi" type="number" step="1" value="20"></div>
@@ -172,26 +177,27 @@ button:hover{border-color:var(--accent)}
   </div>
 
   <div class="card">
-    <h2><span data-i18n="c3">③ 可选：沟曲率半径 → 轴向游隙与接触角</span><span class="tip" data-i18n-title="c3hint">i</span></h2>
+    <h2><span data-i18n="c3" data-i18n-4p="c3_4">③ 可选：沟曲率半径 → 轴向游隙与接触角</span><span class="tip" data-i18n-title="c3hint" data-i18n-title-4p="c3hint4">i</span></h2>
     <table class="in">
       <tr><th></th><th data-i18n="nomH">公称</th><th data-i18n="upH">上偏差</th><th data-i18n="loH">下偏差</th></tr>
       <tr><td class="lbl" data-i18n="ri">内圈沟曲率 ri</td><td><input id="ri" type="number" step="0.001" value="4.088"></td><td><input id="ri_u" type="number" step="0.001" value="0.02"></td><td><input id="ri_l" type="number" step="0.001" value="0"></td></tr>
       <tr><td class="lbl" data-i18n="re">外圈沟曲率 re</td><td><input id="re" type="number" step="0.001" value="4.167"></td><td><input id="re_u" type="number" step="0.001" value="0.02"></td><td><input id="re_l" type="number" step="0.001" value="0"></td></tr>
+      <tr class="only4p"><td class="lbl" data-i18n="aRow">接触角 α 内 / 外</td><td><input id="ai" type="number" step="0.5" value="25"></td><td><input id="ae" type="number" step="0.5" value="25"></td><td class="hint">°</td></tr>
       <tr><td class="lbl" data-i18n="Zs">钢球数 Z</td><td><input id="Z" type="number" step="1" min="3" max="40" value="9"></td><td colspan="2" class="hint" data-i18n="Zhint">仅用于画图</td></tr>
     </table>
   </div>
 
   <div class="card">
-    <h2><span data-i18n="c4">④ 合套反算：选多大的钢球</span><span class="tip" data-i18n-title="c4hint">i</span></h2>
+    <h2><span data-i18n="c4">④ 合套反算：选多大的钢球</span><span class="tip" data-i18n-title="c4hint" data-i18n-title-4p="c4hint4">i</span></h2>
     <div class="row2">
-      <div><label data-i18n="mDe">实测 De（mm）</label><input id="mDe" type="number" step="0.001" value=""></div>
-      <div><label data-i18n="mDi">实测 Di（mm）</label><input id="mDi" type="number" step="0.001" value=""></div>
+      <div><label data-i18n="mDe" data-i18n-4p="mDe4">实测 De（mm）</label><input id="mDe" type="number" step="0.001" value=""></div>
+      <div><label data-i18n="mDi" data-i18n-4p="mDi4">实测 Di（mm）</label><input id="mDi" type="number" step="0.001" value=""></div>
     </div>
     <div id="rev" style="margin-top:6px" class="mono"></div>
   </div>
 
   <div class="card" id="barCard">
-    <h2 data-i18n="barT">游隙范围 vs 目标范围</h2>
+    <h2 data-i18n="barT" data-i18n-4p="barT4">游隙范围 vs 目标范围</h2>
     <svg id="bar" viewBox="0 0 360 170" role="img"></svg>
   </div>
 </section>
@@ -201,9 +207,9 @@ button:hover{border-color:var(--accent)}
     <div class="resL">
       <h2 data-i18n="res">计算结果</h2>
       <div class="big">
-        <div class="kpi"><div class="k" data-i18n="kmin">最小游隙</div><div class="v" id="gmin">–</div></div>
-        <div class="kpi"><div class="k" data-i18n="knom">公称游隙</div><div class="v" id="gnom">–</div></div>
-        <div class="kpi"><div class="k" data-i18n="kmax">最大游隙</div><div class="v" id="gmax">–</div></div>
+        <div class="kpi"><div class="k" data-i18n="kmin" data-i18n-4p="kminA">最小游隙</div><div class="v" id="gmin">–</div></div>
+        <div class="kpi"><div class="k" data-i18n="knom" data-i18n-4p="knomA">公称游隙</div><div class="v" id="gnom">–</div></div>
+        <div class="kpi"><div class="k" data-i18n="kmax" data-i18n-4p="kmaxA">最大游隙</div><div class="v" id="gmax">–</div></div>
       </div>
       <div id="verdict" class="verdict"></div>
     </div>
@@ -220,10 +226,11 @@ button:hover{border-color:var(--accent)}
     <label><input type="radio" name="case" value="min"><span data-i18n="min">最小</span></label>
     <label><input type="radio" name="case" value="max"><span data-i18n="max">最大</span></label>
     <span class="gsep"></span>
-    <span data-i18n="gaugeL">钢球规值</span><span class="tip" data-i18n-title="gaugeTip">i</span>
-    <input id="gauge" type="range" min="-6" max="6" step="0.5" value="0" style="flex:0 1 170px;min-width:90px">
+    <span data-i18n="gaugeL">钢球规值</span><span class="tip" data-i18n-title="gaugeTip" data-i18n-title-4p="gaugeTip4">i</span>
+    <input id="gauge" type="range" min="-6" max="6" step="0.05" value="0" style="flex:0 1 140px;min-width:80px">
     <output id="gaugeO" style="min-width:58px"></output>
     <button id="gaugeReset" data-i18n="gaugeReset">归零</button>
+    <button id="asmBtn" data-i18n="asmBtn" data-i18n-title="asmTip">🎯 装配到目标中值</button>
     <span id="gaugeEq" class="geq"></span>
   </div>
   <div class="viz">
@@ -234,7 +241,7 @@ button:hover{border-color:var(--accent)}
       <svg id="sec" viewBox="0 0 400 425" role="img"></svg>
     </div>
     <div class="pane">
-      <h3><span data-i18n="secT">沟道截面 · 过轴线剖切（顶部钢球）</span><span class="tip" data-i18n-title="secTip">i</span></h3>
+      <h3><span data-i18n="secT" data-i18n-4p="secT4">沟道截面 · 过轴线剖切（顶部钢球）</span><span class="tip" data-i18n-title="secTip" data-i18n-title-4p="secTip4">i</span></h3>
       <div class="ctrl"><span data-i18n="mode">模式</span>
         <label><input type="radio" name="gmode" value="radial" checked><span data-i18n="radial">径向压紧</span></label>
         <label><input type="radio" name="gmode" value="axial"><span data-i18n="axial">轴向推移</span></label>
@@ -258,6 +265,38 @@ zh:{
   sub:'输入图纸沟径与钢球直径，计算未安装状态的几何游隙（无载、20 °C）。纯本地运行，不联网、不上传。',
   ctT:'公差贡献', ctTip:'游隙变动范围 = De 公差带 + Di 公差带 + 2 × Dw 公差带（钢球在直径方向出现两次）。占比最大的一项（橙色）是控制游隙最有效的着力点。', ctSum:'合计 {v} µm = 最大 − 最小游隙', ctDw:'Dw ×2',
   tMid:'中值 {v} µm',
+  h1_4:'深沟球轴承 4P · 原始轴向游隙计算与可视化',
+  type2pTip:'2P：单圆弧沟道，两点接触，重点管控径向游隙', type4pTip:'4P：桃形沟道，四点接触，重点管控轴向游隙',
+  De4:'外圈 量球底', Di4:'内圈 量球顶', mDe4:'实测 外圈球底（mm）', mDi4:'实测 内圈球顶（mm）', ctUb:'球底', ctOb:'球顶',
+  c1hint4:'4P 模式按合套实际测量的沟腰尺寸输入：量球（与钢球同名义直径）放入沟道、同时贴住两侧沟腰，外圈测球底直径，内圈测球顶直径。桃尖测不到，由几何反算，只作参考。',
+  c2_4:'② 目标轴向游隙（µm）', c2hint4:'4P 重点管控轴向游隙。默认目标仅为示例，请按图纸或客户要求填写。',
+  c3_4:'③ 沟曲率半径与设计接触角',
+  c3hint4:'桃形沟：每个沟道由两段半径 R 的圆弧组成，两圆心沿轴向各偏离沟道中心 c，设计接触角 α 满足 sin α = c / (R − Dw/2)。c 按公称钢球和设计接触角算出，视为砂轮修形的固定值。',
+  aRow:'接触角 内/外',
+  c4hint4:'输入合套实测的外圈球底、内圈球顶直径，按②的轴向游隙目标反算允许的钢球直径。留空按名义尺寸计算。',
+  kminA:'最小轴向游隙', knomA:'公称轴向游隙', kmaxA:'最大轴向游隙', barT4:'轴向游隙范围 vs 目标',
+  secT4:'沟道截面 · 桃形沟四点接触（顶部钢球）',
+  secTip4:'桃形沟：每个沟道两段圆弧（+ 为圆弧圆心），沟底尖角叫桃尖。「径向」模式把内圈上顶到底时四点同时接触；「轴向」模式推到底时只剩对角两点接触。沟道偏差放大 M 倍（角度真实），间隙和钢球变化另放大 K 倍才看得见，数值以下方说明为准。蓝点为内圈接触点，红点为外圈接触点。',
+  gaugeTip4:'4P：钢球每大 1 µm，径向游隙约减小 1/cos αi + 1/cos αe（25° 时约 2.2 µm），轴向游隙减小得更多（约为径向的 1/tan α 倍）。套圈固定不动。',
+  gaugeEq4:'钢球 {g}：轴向 {a0}→{a1}，径向 {r0}→{r1} µm',
+  ax4Head:'内沟 R {ri}、偏心 c {ci} mm、α {ai}°；外沟 R {re}、偏心 c {ce} mm、α {ae}°。桃尖（反算）：外 φ{de}、内 φ{di}。',
+  ax4Eq:'径向游隙 = Δ外圈球底 − Δ内圈球顶 − {k} × 钢球规值；轴向游隙 ≈ 径向 × {q}',
+  thGa4:'轴向 Ga (µm)', thGr4:'径向 Gr (µm)', thAp:'推到底接触角',
+  ax4Note:'每一行是同一组公差组合：按轴向游隙取最小 / 公称 / 最大时，对应的径向游隙和推到底时的接触角。',
+  vBad4:'请检查输入：直径为正数、内圈球顶大于外圈球底、沟曲率半径大于钢球半径、接触角在 0–80° 之间。',
+  vNeg4:'最坏组合下径向余量为负（{g} µm）：钢球装不进去，四点同时干涉。',
+  revMid4:'取中值 {d} mm 时，轴向游隙 ≈ {g} µm', revNone4:'在钢球 ±50 µm 范围内达不到目标轴向游隙，请检查实测值或目标。',
+  ctT4:'轴向游隙敏感度（单项）', ctTip4:'每个尺寸单独在公差带内变化（其他取公称）时，轴向游隙的变化量。4P 几何是非线性的，各项之和不等于总范围。', ctSum4:'最大 − 最小轴向游隙 = {v} µm',
+  tag4:'示意图 · 沟道偏差放大 {m}× · 间隙和钢球变化再放大 {k}×', cuspL:'桃尖',
+  negSub4:'径向余量 {g} µm',
+  n4Radial:'径向：内圈径向位移 {d} µm；接触点 {n} 个（内圈 {ni}、外圈 {ne}）；距四点接触还差 {r} µm。把内圈上顶到底即可看到四点接触。',
+  n4Axial:'轴向推移：内圈轴向位移 {d} µm（总轴向游隙 Ga {Ga} µm）；接触点 {n} 个。推到底时只剩对角两点接触，接触角 {ap}°（设计 {a}°）。',
+  n4Neg:'径向余量为负（{g} µm）：钢球与沟道干涉，装不进去。',
+  asmBtn:'🎯 装配到目标中值', asmTip:'按当前工况自动选出钢球规值，使游隙正好等于第②栏目标的中值，并开始动画演示。4P 演示轴向推移，2P 演示径向。',
+  asmNote4:'🎯 已按目标中值装配：钢球规值 {g} µm → 轴向游隙 {v} µm（目标 {lo}–{hi} µm）',
+  asmNote2:'🎯 已按目标中值装配：钢球规值 {g} µm → 径向游隙 {v} µm（目标 {lo}–{hi} µm）',
+  asmOut:'达到目标中值需要钢球规值 {g} µm，超出滑块 ±6 µm 范围。', asmNone:'在钢球 ±20 µm 范围内达不到目标中值，请检查输入。',
+  gaLbl:'轴向游隙 {v} µm', gaSub:'内圈左右推到底的总行程',
   gaugeL:'钢球规值', gaugeReset:'归零', gaugeEq:'游隙 = {b} − 2 × ({g}) = {r} µm',
   gaugeTip:'拖动钢球规值：钢球直径每大 1 µm，径向游隙小 2 µm（钢球在直径方向上出现两次）。套圈固定不动，钢球直径的变化和游隙用同一个放大倍数显示，蓝色虚线是规值 0 时的钢球。内圈压到底时，钢球变大会把内圈顶起一点，这是真实现象；想只看钢球变大，把「内圈径向」拖到中间。只影响下方两张模拟图，不改变上方的计算结果。',
   gaugeGhost:'蓝色虚线：规值 0 时的钢球（钢球直径变化按 {M}× 放大显示）',
@@ -314,6 +353,38 @@ en:{
   sub:'Enter the drawing groove diameters and ball diameter to get the unmounted geometric clearance (no load, 20 °C). Runs locally — nothing is uploaded.',
   ctT:'Tolerance contribution', ctTip:'Clearance spread = De tolerance band + Di tolerance band + 2 × Dw tolerance band (the ball appears twice across the diameter). The largest share (orange) is where tightening pays off most.', ctSum:'Total {v} µm = max − min clearance', ctDw:'Dw ×2',
   tMid:'Mid {v} µm',
+  h1_4:'Deep Groove Ball Bearing 4P · Initial Axial Play',
+  type2pTip:'2P: single-arc groove, 2-point contact, radial clearance controlled', type4pTip:'4P: gothic-arch groove, 4-point contact, axial play controlled',
+  De4:'Outer · under-ball', Di4:'Inner · over-ball', mDe4:'Measured outer under-ball (mm)', mDi4:'Measured inner over-ball (mm)', ctUb:'Under', ctOb:'Over',
+  c1hint4:'4P mode uses the groove-flank sizes measured at matching: a gauge ball of the nominal ball size sits on both flanks; measure the under-ball diameter of the outer ring and the over-ball diameter of the inner ring. The cusp cannot be measured and is back-calculated for reference only.',
+  c2_4:'② Target axial play (µm)', c2hint4:'4P bearings are controlled by axial play. The default target is only an example.',
+  c3_4:'③ Groove radii & design contact angle',
+  c3hint4:'Gothic arch: each groove consists of two arcs of radius R whose centres are offset axially by c from the groove centre; the design contact angle satisfies sin α = c / (R − Dw/2). c is computed from the nominal ball and design angle and treated as a fixed wheel-dressing value.',
+  aRow:'Angle in/out',
+  c4hint4:'Enter the measured outer under-ball and inner over-ball diameters to back-calculate the ball diameter for the axial-play target in ②. Empty = nominal.',
+  kminA:'Min axial play', knomA:'Nominal axial play', kmaxA:'Max axial play', barT4:'Axial play range vs target',
+  secT4:'Groove section · gothic arch, 4-point (top ball)',
+  secTip4:'Gothic arch: two arcs per groove (+ marks arc centres), meeting at the cusp. Radial mode: pushing the inner ring fully up gives 4-point contact. Axial mode: at full shift only a diagonal pair stays in contact. Groove deviations are magnified M× (angles true); gaps and ball change are magnified a further K× to be visible — see the note for the real values. Blue dots: inner-ring contacts; red dots: outer-ring contacts.',
+  gaugeTip4:'4P: every 1 µm larger ball reduces radial clearance by about 1/cos αi + 1/cos αe (≈2.2 µm at 25°), and axial play even more (about 1/tan α times the radial change). Rings stay fixed.',
+  gaugeEq4:'Ball {g}: axial {a0}→{a1}, radial {r0}→{r1} µm',
+  ax4Head:'Inner R {ri}, offset c {ci} mm, α {ai}°; outer R {re}, offset c {ce} mm, α {ae}°. Cusp (back-calculated): outer φ{de}, inner φ{di}.',
+  ax4Eq:'Radial = Δ outer under-ball − Δ inner over-ball − {k} × ball gauge; axial ≈ radial × {q}',
+  thGa4:'Axial Ga (µm)', thGr4:'Radial Gr (µm)', thAp:'Angle at full shift',
+  ax4Note:'Each row is one tolerance combination: the min / nominal / max axial play case with its radial clearance and contact angle at full shift.',
+  vBad4:'Check inputs: positive diameters, inner over-ball > outer under-ball, groove radii larger than the ball radius, contact angles 0–80°.',
+  vNeg4:'Worst-case radial slack is negative ({g} µm): the balls cannot be assembled (4-point interference).',
+  revMid4:'With the mid value {d} mm, axial play ≈ {g} µm', revNone4:'No ball within ±50 µm reaches the target axial play — check the readings or the target.',
+  ctT4:'Axial play sensitivity (single factor)', ctTip4:'Change in axial play when each dimension alone moves across its tolerance band (others nominal). 4P geometry is nonlinear, so the parts do not add up to the total range.', ctSum4:'Max − min axial play = {v} µm',
+  tag4:'Schematic · groove deviations ×{m} · gaps and ball change ×{k} more', cuspL:'cusp',
+  negSub4:'Radial slack {g} µm',
+  n4Radial:'Radial: inner ring shifted {d} µm; {n} contacts (inner {ni}, outer {ne}); {r} µm to 4-point contact. Push the inner ring fully up to see 4-point contact.',
+  n4Axial:'Axial: inner ring shifted {d} µm (total axial play Ga {Ga} µm); {n} contacts. At full shift only a diagonal pair remains, contact angle {ap}° (design {a}°).',
+  n4Neg:'Negative radial slack ({g} µm): ball–groove interference, cannot be assembled.',
+  asmBtn:'🎯 Assemble to target mid', asmTip:'Automatically picks the ball gauge that puts the clearance exactly at the mid of the target in ②, then starts the animation (axial shift for 4P, radial for 2P).',
+  asmNote4:'🎯 Assembled to target mid: ball gauge {g} µm → axial play {v} µm (target {lo}–{hi} µm)',
+  asmNote2:'🎯 Assembled to target mid: ball gauge {g} µm → radial clearance {v} µm (target {lo}–{hi} µm)',
+  asmOut:'Reaching the target mid needs a ball gauge of {g} µm, outside the ±6 µm slider range.', asmNone:'No ball within ±20 µm reaches the target mid — check the inputs.',
+  gaLbl:'Axial play {v} µm', gaSub:'total inner-ring travel, end to end',
   gaugeL:'Ball gauge', gaugeReset:'Reset', gaugeEq:'Clearance = {b} − 2 × ({g}) = {r} µm',
   gaugeTip:'Drag the ball gauge: every 1 µm larger ball diameter makes the radial clearance 2 µm smaller (the ball appears twice across the diameter). The rings stay fixed; the ball size change is shown with the same magnification as the clearance, and the blue dashed circle is the ball at gauge 0. With the inner ring pushed to the bottom, a bigger ball lifts the inner ring slightly — that is real; centre the inner ring to see only the ball growing. Affects only the two simulation views below, not the results above.',
   gaugeGhost:'Blue dashed: ball at gauge 0 (ball size change shown ×{M})',
@@ -377,6 +448,7 @@ const fmt = (x, d=1) => isFinite(x) ? (Math.abs(x)<0.5*Math.pow(10,-d)?0:x).toFi
 let state = {};
 
 function calc(){
+  if(bType==='4p') return calc4();
   const De=num('De'), Di=num('Di'), Dw=num('Dw');
   const Deu=num('De_u')||0, Del=num('De_l')||0, Diu=num('Di_u')||0, Dil=num('Di_l')||0, Dwu=num('Dw_u')||0, Dwl=num('Dw_l')||0;
   const lo=num('G_lo'), hi=num('G_hi');
@@ -532,11 +604,24 @@ function grooveRadii(Dw){
   return {ri,re,assumed};
 }
 const gaugeUm=()=>{ const v=parseFloat($('gauge').value); return isFinite(v)?v:0; };
-const baseG=()=>state['g'+document.querySelector('input[name=case]:checked').value];
+const caseKey=()=>document.querySelector('input[name=case]:checked').value;
+// 端面图用径向游隙：2P 直接取计算值；4P 按所选工况的几何重新计算
+const baseG=()=>{ if(state.type==='4p'){ const g=state.g4&&state.g4[caseKey()]; return g?um(g.Gr):NaN; } return state['g'+caseKey()]; };
 // 模拟用的游隙 = 所选工况的游隙 − 2 × 钢球规值
-function caseG(){ return baseG()-2*gaugeUm(); }
+function caseG(){
+  if(state.type==='4p'){ const p=state.p4&&state.p4[caseKey()]; const g=p&&geo4({...p,Dw:p.Dw+gaugeUm()/1000}); return g?um(g.Gr):NaN; }
+  return baseG()-2*gaugeUm();
+}
+const gs=v=>(v>0?'+':'')+(Math.abs(v*10-Math.round(v*10))>1e-6?v.toFixed(2):v.toFixed(1));
 function updateGauge(){
-  const g=gaugeUm(), b=baseG(), sg=(g>0?'+':'')+g.toFixed(1);
+  if(state.type==='4p'){
+    const g=gaugeUm(), sg=gs(g), p=state.p4&&state.p4[caseKey()], eq=$('gaugeEq');
+    const g0=p&&geo4(p), g1=p&&geo4({...p,Dw:p.Dw+g/1000});
+    $('gaugeO').textContent=sg+' µm';
+    eq.textContent=(g0&&g1)?t('gaugeEq4',{g:sg,a0:fmt(um(g0.Ga)),a1:fmt(um(g1.Ga)),r0:fmt(um(g0.Gr)),r1:fmt(um(g1.Gr))}):'';
+    eq.classList.toggle('on',g!==0); return;
+  }
+  const g=gaugeUm(), b=baseG(), sg=gs(g);
   $('gaugeO').textContent=sg+' µm';
   const eq=$('gaugeEq');
   eq.textContent=isFinite(b)?t('gaugeEq',{b:fmt(b),g:sg,r:fmt(b-2*g)}):'';
@@ -559,7 +644,7 @@ function drawSection(){
   const Z=Math.max(3,Math.min(40,Math.round(num('Z')||9)));
   const c=colors();
   const Gd=Math.max(g/1000*mag,-Dw), Gd0=Math.max(g0/1000*mag,-Dw);         // 放大后的游隙 mm（负游隙画图时限幅，避免图形翻转）
-  const r=Dw/2, rB=r+gmm*mag/2, depth=DEPTH_RATIO*Dw;   // rB：钢球半径，规值按同一倍数放大
+  const r=Dw/2, rB=r+(Gd0-Gd)/4, depth=DEPTH_RATIO*Dw;   // rB：钢球半径，按游隙减小量反推（2P 时等于 r + 规值×倍数/2）
   const Ri=Di/2, Re=Ri+2*r+Gd0/2;                  // 套圈固定在规值 0 的位置，拖规值时只有钢球变大             // 沟底半径（同心时单边 Gr/2）
   const Rsi=Ri+depth, Rso=Re-depth;          // 挡边半径
   const outerOD=Re+0.5*Dw, bore=Math.max(0.25*Ri, Ri-0.5*Dw);
@@ -604,6 +689,7 @@ function drawSection(){
 // 坐标：x 轴向，y 径向（向上为正），原点=同心时的钢球中心。
 // 小量（ri−r、re−r、Gr）同乘 M 放大；接触角只取决于 Gr/(2A)，放大后保持真实。
 function drawGroove(){
+  if(state.type==='4p') return drawGroove4();
   const {De,Di} = state, Dw0=state.Dw, gmm=gaugeUm()/1000, Dw=Dw0+gmm; const svg=$('groove'), note=$('gnote'); const g=caseG(), g0=baseG();
   if(![De,Di,Dw,g].every(isFinite)||De<=Di||Dw<=0){svg.innerHTML='';note.textContent='';return;}
   const {ri,re,assumed}=grooveRadii(Dw0); const r=Dw0/2;
@@ -688,6 +774,7 @@ function drawGroove(){
   h+=`<text x="${X(-Wr)+6}" y="${Y(shO)-8}" fill="${c.mut}" font-size="11">re ${re.toFixed(3)}</text>`;
   h+=`<text x="${X(xi-Wr)+6}" y="${Y(shI)+16}" fill="${c.mut}" font-size="11">ri ${ri.toFixed(3)}</text>`;
   h+=`<text x="${X(Cb.x)-r*k*0.18}" y="${Y(Cb.y)+4}" fill="${c.ink}" font-size="12" text-anchor="end">Dw ${Dw.toFixed(4)}</text>`;
+  if(mode==='axial' && axialOK) h+=travelDim(X,330,GaD,xi,c,GaD/M*1000);   // 画在内圈剖面下部空白处
   h+=`<text x="6" y="14" fill="${c.ink}" font-size="11">${t('tagGroove',{m:M})}</text>`;
   svg.innerHTML=h;
 
@@ -699,11 +786,283 @@ function drawGroove(){
                : `<span class="err">${t('nAxErr')}</span>`);
   if(gmm!==0) s+=`<br><span style="color:var(--accent)">${t('gaugeGhost',{M})}</span>`;
   if(assumed) s+=`<br><span style="color:var(--warn)">${t('nAssumed')}</span>`;
+  s+=asmLine();
   note.innerHTML=s;
 }
 function annulus(cx,cy,R,r){
   const c=(R)=>`M${cx-R} ${cy}a${R} ${R} 0 1 0 ${2*R} 0a${R} ${R} 0 1 0 ${-2*R} 0z`;
   return c(R)+c(r);
+}
+
+// ───────── 4P：桃形沟四点接触 ─────────
+// 截面坐标：x 轴向，y 径向（向外为正）。每段沟道圆弧看作一个圆盘，钢球中心的可行域 = 4 个半径 (R − r) 的圆盘之交。
+// 桃形沟：左半边圆弧的圆心在右侧（+c），右半边圆弧的圆心在左侧（−c），两弧在沟底交成尖角（桃尖）。
+function disks4(p,xi=0,yi=0){
+  const r=p.Dw/2, Rpi=p.Ri-r, Rpe=p.Re-r;
+  const yEc=p.De/2-Math.sqrt(p.Re*p.Re-p.ce*p.ce), yIc=p.Di/2+Math.sqrt(p.Ri*p.Ri-p.ci*p.ci);
+  return [{x:-p.ce,y:yEc,R:Rpe,o:1},{x:p.ce,y:yEc,R:Rpe,o:1},{x:xi-p.ci,y:yIc+yi,R:Rpi,o:0},{x:xi+p.ci,y:yIc+yi,R:Rpi,o:0}];
+}
+function dCands(D){
+  const pts=[];
+  D.forEach(d=>{ pts.push({x:d.x,y:d.y},{x:d.x,y:d.y-d.R},{x:d.x,y:d.y+d.R}); });
+  for(let i=0;i<D.length;i++) for(let j=i+1;j<D.length;j++){
+    const a=D[i], b=D[j], dx=b.x-a.x, dy=b.y-a.y, d=Math.hypot(dx,dy);
+    if(d===0||d>a.R+b.R||d<Math.abs(a.R-b.R)) continue;
+    const t=(a.R*a.R-b.R*b.R+d*d)/(2*d), h=Math.sqrt(Math.max(0,a.R*a.R-t*t));
+    const xm=a.x+t*dx/d, ym=a.y+t*dy/d;
+    pts.push({x:xm+h*dy/d,y:ym-h*dx/d},{x:xm-h*dy/d,y:ym+h*dx/d});
+  }
+  return pts;
+}
+const dInside=(q,D)=>D.every(d=>(q.x-d.x)**2+(q.y-d.y)**2<=d.R*d.R*(1+1e-9)+1e-14);
+const dFeasible=D=>dCands(D).some(q=>dInside(q,D));
+// 可行域里最低的点 = 钢球靠在内圈上的位置
+function dLowest(D){ let best=null; for(const q of dCands(D)) if(dInside(q,D)&&(!best||q.y<best.y)) best=q; return best; }
+// 径向游隙闭式解；轴向游隙用二分法求可行域刚好消失时的内圈轴向位移
+function geo4(p){
+  const r=p.Dw/2, Rpi=p.Ri-r, Rpe=p.Re-r;
+  if(!(Rpi>p.ci&&Rpe>p.ce&&p.Ri>p.ci&&p.Re>p.ce)) return null;
+  const hE=Math.sqrt(Rpe*Rpe-p.ce*p.ce), hI=Math.sqrt(Rpi*Rpi-p.ci*p.ci);
+  const yEc=p.De/2-Math.sqrt(p.Re*p.Re-p.ce*p.ce), yIc=p.Di/2+Math.sqrt(p.Ri*p.Ri-p.ci*p.ci);
+  const s=(yEc+hE)-(yIc-hI), Gr=2*s;
+  const out={Gr,s,hE,hI,yEc,yIc,Ga:0,aPush:NaN};
+  if(s<0) return out;
+  let lo=0, hi=Rpe+Rpi+p.ci+p.ce;
+  for(let k=0;k<60;k++){ const m=(lo+hi)/2; if(dFeasible(disks4(p,m))) lo=m; else hi=m; }
+  out.Ga=2*lo;
+  const D=disks4(p,lo*(1-1e-7)), B=dLowest(D);
+  if(B){ const o=D.filter(d=>d.o).map(d=>({d,e:d.R-Math.hypot(B.x-d.x,B.y-d.y)})).sort((a,b)=>a.e-b.e)[0].d;
+         out.aPush=Math.atan2(Math.abs(B.x-o.x),Math.abs(B.y-o.y))*180/Math.PI; }
+  return out;
+}
+// 量球（与钢球同名义直径）同时贴住两侧沟腰：由外圈球底 / 内圈球顶直径反算桃尖直径
+function cuspFromBall(Dub,Dob,Dg,Ri,Re,ci,ce){
+  const r=Dg/2, hI=Math.sqrt((Ri-r)**2-ci*ci), hE=Math.sqrt((Re-r)**2-ce*ce);
+  return {De:2*(Dub/2+r-hE+Math.sqrt(Re*Re-ce*ce)), Di:2*(Dob/2-r+hI-Math.sqrt(Ri*Ri-ci*ci))};
+}
+function params4(){
+  const tl=id=>num(id)||0;
+  return {De:num('De'),Di:num('Di'),Dw:num('Dw'),Ri:num('ri'),Re:num('re'),ai:num('ai'),ae:num('ae'),
+    u:{De:tl('De_u'),Di:tl('Di_u'),Dw:tl('Dw_u'),Ri:tl('ri_u'),Re:tl('re_u')},
+    l:{De:tl('De_l'),Di:tl('Di_l'),Dw:tl('Dw_l'),Ri:tl('ri_l'),Re:tl('re_l')}};
+}
+function calc4(){
+  const P=params4(), lo=num('G_lo'), hi=num('G_hi'), r0=P.Dw/2;
+  const ok=[P.De,P.Di,P.Dw,P.Ri,P.Re,P.ai,P.ae].every(isFinite)&&P.Di>P.De&&P.Dw>0&&P.Ri>r0&&P.Re>r0&&P.ai>=0&&P.ai<80&&P.ae>=0&&P.ae<80;
+  // 圆心偏距 c 按公称钢球和设计接触角确定，视为砂轮修形的固定值
+  const ci=ok?(P.Ri-r0)*Math.sin(P.ai*Math.PI/180):0, ce=ok?(P.Re-r0)*Math.sin(P.ae*Math.PI/180):0;
+  // De 栏 = 外圈量球球底，Di 栏 = 内圈量球球顶；量球取钢球名义直径，桃尖按各组合的沟曲率反算
+  const mk=o=>{ const Ri=P.Ri+(o.Ri||0), Re=P.Re+(o.Re||0), cu=cuspFromBall(P.De+(o.De||0),P.Di+(o.Di||0),P.Dw,Ri,Re,ci,ce);
+    return {De:cu.De,Di:cu.Di,Dw:P.Dw+(o.Dw||0),Ri,Re,ci,ce}; };
+  const pn=mk({}), gn=ok?geo4(pn):null, bad=!gn;
+  state={type:'4p',De:pn.De,Di:pn.Di,Dw:P.Dw,lo,hi,ai:P.ai,ae:P.ae};
+  // 5 个尺寸的 32 种公差极限组合，按轴向游隙取最小 / 最大
+  let cmin=null,cmax=null,negMin=Infinity;
+  if(!bad){ const K=['De','Di','Dw','Ri','Re'];
+    for(let m=0;m<32;m++){ const o={}; K.forEach((k,i)=>o[k]=((m>>i)&1)?P.u[k]:P.l[k]);
+      const p=mk(o), g=geo4(p); if(!g) continue; negMin=Math.min(negMin,um(g.Gr));
+      const Ga=um(g.Ga); if(!cmin||Ga<cmin.Ga) cmin={p,g,Ga}; if(!cmax||Ga>cmax.Ga) cmax={p,g,Ga}; } }
+  state.gnom=bad?NaN:um(gn.Ga); state.gmin=cmin?cmin.Ga:NaN; state.gmax=cmax?cmax.Ga:NaN;
+  state.p4={nom:pn,min:cmin&&cmin.p,max:cmax&&cmax.p}; state.g4={nom:gn,min:cmin&&cmin.g,max:cmax&&cmax.g};
+  const unit=' <small>µm</small>';
+  ['gmin','gnom','gmax'].forEach(id=>$(id).innerHTML=bad?'–':fmt(state[id])+unit);
+  const midV=(lo+hi)/2;
+  $('tmid').textContent=(isFinite(lo)&&isFinite(hi))?t('tMid',{v:Number.isInteger(midV)?midV:midV.toFixed(1)}):'';
+  const v=$('verdict'), {gmin,gmax}=state;
+  if(bad){ v.className='verdict bad'; v.textContent=t('vBad4'); }
+  else if(negMin<0){ v.className='verdict bad'; v.textContent=t('vNeg4',{g:fmt(negMin)}); }
+  else if(isFinite(lo)&&isFinite(hi)&&gmin>=lo&&gmax<=hi){ v.className='verdict ok'; v.textContent=t('vOk',{lo,hi}); }
+  else if(isFinite(lo)&&isFinite(hi)&&(gmax<lo||gmin>hi)){ v.className='verdict bad'; v.textContent=t('vOut',{lo,hi}); }
+  else if(isFinite(lo)&&isFinite(hi)){ const parts=[]; if(gmin<lo) parts.push(t('vLo',{lo})); if(gmax>hi) parts.push(t('vHi',{hi}));
+    v.className='verdict warn'; v.textContent=t('vPart',{a:fmt(gmin),b:fmt(gmax),parts:parts.join(t('sep'))}); }
+  else { v.className='verdict'; v.textContent=''; }
+  // 结果表：每行是同一组公差组合
+  const ax=$('axial');
+  if(!bad){
+    const row=(name,g)=>g?`<tr><td>${name}</td><td>${fmt(um(g.Ga))}</td><td>${fmt(um(g.Gr))}</td><td>${isFinite(g.aPush)?g.aPush.toFixed(2)+'°':'—'}</td></tr>`:'';
+    const kB=1/Math.cos(P.ai*Math.PI/180)+1/Math.cos(P.ae*Math.PI/180), qA=1/Math.tan(((P.ai+P.ae)/2)*Math.PI/180);
+    ax.innerHTML=`<div class="hint">${t('ax4Head',{ri:P.Ri.toFixed(3),ci:ci.toFixed(4),ai:P.ai,re:P.Re.toFixed(3),ce:ce.toFixed(4),ae:P.ae,de:pn.De.toFixed(4),di:pn.Di.toFixed(4)})}</div>
+    <div class="hint" style="color:var(--ink)">${t('ax4Eq',{k:kB.toFixed(2),q:qA.toFixed(2)})}</div>
+    <table class="in mono" style="margin-top:4px"><tr><th><span class="tip" title="${t('ax4Note')}">i</span></th><th>${t('thGa4')}</th><th>${t('thGr4')}</th><th>${t('thAp')}</th></tr>
+    ${row(t('min'),cmin&&cmin.g)}${row(t('nom'),gn)}${row(t('max'),cmax&&cmax.g)}</table>`;
+  } else ax.innerHTML='';
+  // 合套反算：轴向游隙随钢球增大而单调减小，二分求钢球直径
+  if(isFinite(P.De)) $('mDe').placeholder=P.De.toFixed(3);
+  if(isFinite(P.Di)) $('mDi').placeholder=P.Di.toFixed(3);
+  const mDe=isFinite(num('mDe'))?num('mDe'):P.De, mDi=isFinite(num('mDi'))?num('mDi'):P.Di, rv=$('rev');
+  if(!bad&&isFinite(lo)&&isFinite(hi)){
+    const cm=cuspFromBall(mDe,mDi,P.Dw,P.Ri,P.Re,ci,ce);
+    const GaOf=dw=>{ const g=geo4({...pn,De:cm.De,Di:cm.Di,Dw:dw}); return g?um(g.Ga):NaN; };
+    const solve=T=>{ let a=P.Dw-0.05, b=P.Dw+0.05; if(!(GaOf(a)>=T&&GaOf(b)<=T)) return NaN;
+      for(let k=0;k<50;k++){ const m=(a+b)/2; if(GaOf(m)>=T) a=m; else b=m; } return (a+b)/2; };
+    const dmin=solve(hi), dmax=solve(lo);
+    if(isFinite(dmin)&&isFinite(dmax)){ const dm=(dmin+dmax)/2;
+      rv.innerHTML=`${t('revBall')}<b>${dmin.toFixed(4)} – ${dmax.toFixed(4)} mm</b><br>
+      ${t('revGauge')}<b>${fmt(um(dmin-P.Dw),1)} – ${fmt(um(dmax-P.Dw),1)} µm</b><br>
+      <span class="hint">${t('revMid4',{d:dm.toFixed(4),g:fmt(GaOf(dm))})}</span>`;
+    } else rv.textContent=t('revNone4');
+  } else rv.textContent='';
+  // 单项敏感度：每个尺寸单独在公差带内变化时轴向游隙的变化量
+  const cb=$('contrib');
+  if(!bad){
+    const GaAt=o=>{ const g=geo4(mk(o)); return g?um(g.Ga):NaN; };
+    const nm={De:t('ctUb'),Di:t('ctOb'),Dw:'Dw',Ri:'ri',Re:'re'};
+    const items=['De','Di','Dw','Ri','Re'].map(k=>[nm[k], Math.abs(GaAt({[k]:P.u[k]})-GaAt({[k]:P.l[k]}))]);
+    const tot=items.reduce((a,[,x])=>a+(isFinite(x)?x:0),0), mx=Math.max(...items.map(([,x])=>x));
+    cb.innerHTML=`<div class="ct-h">${t('ctT4')}<span class="tip" title="${t('ctTip4')}">i</span></div>`+
+      items.map(([k,x])=>`<div class="ct-row${tot>0&&x===mx?' top':''}"><span>${k}</span><div class="ct-bar"><i style="width:${tot>0?x/tot*100:0}%"></i></div><span class="ct-v">${fmt(x)} µm · ${tot>0?fmt(x/tot*100,0):0}%</span></div>`).join('')+
+      `<div class="hint" style="margin-top:2px">${t('ctSum4',{v:fmt(gmax-gmin)})}</div>`;
+  } else cb.innerHTML='';
+  if(gmagAuto&&ok){ const A4=(P.Ri-r0)+(P.Re-r0); if(A4>0) $('gmag').value=Math.max(1,Math.min(300,Math.round(0.45*P.Dw/A4))); }
+  drawBar(); updateGauge(); drawSection(); drawGroove();
+}
+
+// ───────── 4P 沟道截面 ─────────
+function drawGroove4(){
+  const svg=$('groove'), note=$('gnote'), key=document.querySelector('input[name=case]:checked').value;
+  const p0=state.p4&&state.p4[key];
+  if(!p0){svg.innerHTML='';note.textContent='';return;}
+  const gmm=gaugeUm()/1000, p={...p0,Dw:p0.Dw+gmm}, G0=geo4(p0), G=geo4(p);
+  if(!G0||!G){svg.innerHTML='';note.innerHTML=`<span class="err">${t('gErrR')}</span>`;return;}
+  const M=+$('gmag').value, tt=+$('gpos').value, mode=document.querySelector('input[name=gmode]:checked').value;
+  $('gmagO').textContent=M+'×';
+  $('gposO').textContent = mode==='radial'
+    ? (tt>0.99?t('gDown'):tt<-0.99?t('gUp'):tt.toFixed(2))
+    : (tt>0.99?t('gRight'):tt<-0.99?t('gLeft'):tt.toFixed(2));
+  const c=colors(), r0=p0.Dw/2;
+  // 两级放大：沟道偏差放大 M（角度保持真实）；间隙和钢球变化再放大 K，否则几微米的间隙看不见
+  // 参考余量：取名义余量和目标轴向游隙对应的余量中较大者（轴向 ≈ 径向 / tan α → 余量 ≈ Ga·tanα/2），
+  // 避免零游隙设计的轴承把间隙放大到上限
+  const tanA=Math.tan(((state.ai+state.ae)/2)*Math.PI/180), gaMid=(state.lo+state.hi)/2;
+  const sT=isFinite(gaMid)&&gaMid>0&&tanA>0?gaMid/1000*tanA/2:0, sRef=Math.max(G0.s,sT,0.0005);
+  const K=G0.s>=-1e-7?Math.max(1,Math.min(400,Math.round(0.05*p0.Dw/(M*sRef)))):1;   // 名义正好零游隙也要放大
+  // 虚拟几何：沟底直径加大使余量放大 K 倍，钢球变化也放大 K 倍；套圈形状不随规值变化
+  const pv={...p0,De:p0.De+2*Math.max(G0.s,0)*(K-1),Dw:p0.Dw+K*gmm}, V0=geo4({...pv,Dw:p0.Dw}), V=geo4(pv);
+  const yRef=((V0.yEc+V0.hE)+(V0.yIc-V0.hI))/2;
+  let xi=0, yi=0;
+  if(V.s>=0){ if(mode==='radial') yi=-tt*V.s*(1-1e-7); else xi=tt*V.Ga/2*(1-1e-7); }
+  const D=disks4(pv,xi,yi);
+  let B=V.s>=0?dLowest(D):null;
+  if(!B) B={x:xi/2,y:((V.yEc+V.hE)+(V.yIc+yi-V.hI))/2};
+  // 映射：偏差 ×M；圆弧半径 r0 + M(R − r0)，钢球半径 r0 + M(r − r0)
+  const W=460,H=400, ext=r0+0.65*p0.Dw, k=Math.min(W/(2.8*p0.Dw),H/(2*ext)), cx=W/2, cy=H/2;
+  const X=x=>cx+x*k, Y=y=>cy-y*k, md=(x,y)=>({x:M*x,y:M*(y-yRef)});
+  const Rde=r0+M*(pv.Re-r0), Rdi=r0+M*(pv.Ri-r0), rBd=r0+M*(pv.Dw/2-r0), cEd=M*pv.ce, cId=M*pv.ci, xid=M*xi;
+  const Oc=md(0,V.yEc), Ic=md(xi,V.yIc+yi), Bd=md(B.x,B.y), depth=DEPTH_RATIO*p0.Dw;
+  const cuspO=Oc.y+Math.sqrt(Rde*Rde-cEd*cEd), cuspI=Ic.y-Math.sqrt(Rdi*Rdi-cId*cId);
+  const shO=cuspO-depth, shI=cuspI+depth, Wr=1.15*p0.Dw, far=ext+p0.Dw, ch=0.08*p0.Dw;
+  const xo=Math.sqrt(Math.max(0,Rde*Rde-(shO-Oc.y)**2)), xin=Math.sqrt(Math.max(0,Rdi*Rdi-(shI-Ic.y)**2));
+  let h=defs(c,'g')+`<style>#groove text{paint-order:stroke;stroke:${c.panel};stroke-width:3px;stroke-linejoin:round}</style>`;
+  // 外圈：右肩 → 右半弧（圆心 −c）→ 桃尖 → 左半弧（圆心 +c）→ 左肩
+  const outerP=`M${X(-Wr)} ${Y(far)} L${X(Wr)} ${Y(far)} L${X(Wr)} ${Y(shO+ch)} L${X(Wr-ch)} ${Y(shO)} L${X(-cEd+xo)} ${Y(shO)} A${Rde*k} ${Rde*k} 0 0 0 ${X(0)} ${Y(cuspO)} A${Rde*k} ${Rde*k} 0 0 0 ${X(cEd-xo)} ${Y(shO)} L${X(-Wr+ch)} ${Y(shO)} L${X(-Wr)} ${Y(shO+ch)} Z`;
+  // 内圈：左肩 → 左半弧（圆心 +c）→ 桃尖 → 右半弧（圆心 −c）→ 右肩
+  const innerP=`M${X(xid-Wr)} ${Y(-far)} L${X(xid-Wr)} ${Y(shI-ch)} L${X(xid-Wr+ch)} ${Y(shI)} L${X(xid+cId-xin)} ${Y(shI)} A${Rdi*k} ${Rdi*k} 0 0 0 ${X(xid)} ${Y(cuspI)} A${Rdi*k} ${Rdi*k} 0 0 0 ${X(xid-cId+xin)} ${Y(shI)} L${X(xid+Wr-ch)} ${Y(shI)} L${X(xid+Wr)} ${Y(shI-ch)} L${X(xid+Wr)} ${Y(-far)} Z`;
+  [outerP,innerP].forEach(q=>{ h+=`<path d="${q}" fill="${c.ring}"/><path d="${q}" fill="url(#htg)" stroke="${c.ringE}" stroke-width="1.4"/>`; });
+  h+=`<line x1="${X(0)}" y1="${Y(cuspO)}" x2="${X(0)}" y2="${Y(far)}" stroke="${c.mut}" stroke-dasharray="8 3 2 3" opacity=".7"/>`;
+  h+=`<line x1="${X(xid)}" y1="${Y(-far)}" x2="${X(xid)}" y2="${Y(cuspI)}" stroke="${c.mut}" stroke-dasharray="8 3 2 3" opacity=".7"/>`;
+  // 钢球
+  h+=`<circle cx="${X(Bd.x)}" cy="${Y(Bd.y)}" r="${rBd*k}" fill="${c.ball}" stroke="${c.ballE}" stroke-width="1.2"/><circle cx="${X(Bd.x)}" cy="${Y(Bd.y)}" r="${rBd*k}" fill="url(#bgg)"/>`;
+  if(gmm!==0) h+=`<circle cx="${X(Bd.x)}" cy="${Y(Bd.y)}" r="${r0*k}" fill="none" stroke="${c.acc}" stroke-width="1.5" stroke-dasharray="5 4"/>`;
+  // 四段圆弧的圆心
+  D.forEach(d=>{ const q=md(d.x,d.y); h+=`<path d="M${X(q.x)-4} ${Y(q.y)}h8M${X(q.x)} ${Y(q.y)-4}v8" stroke="${c.mut}" stroke-width="1.2"/>`; });
+  // 接触点：钢球中心到圆心的距离等于 (R − r)
+  let nI=0,nE=0; const pts=[];
+  if(V.s>=0) D.forEach(d=>{ const dist=Math.hypot(B.x-d.x,B.y-d.y);
+    if(dist>=d.R-1e-6){ const q=md(d.x,d.y), R=d.o?Rde:Rdi, L=Math.hypot(Bd.x-q.x,Bd.y-q.y);
+      const cp={x:q.x+R*(Bd.x-q.x)/L,y:q.y+R*(Bd.y-q.y)/L,o:d.o}; pts.push(cp); d.o?nE++:nI++; } });
+  pts.forEach(cp=>{ h+=`<line x1="${X(Bd.x)}" y1="${Y(Bd.y)}" x2="${X(cp.x)}" y2="${Y(cp.y)}" stroke="${c.acc}" stroke-dasharray="5 4" stroke-width="1.2"/>`;
+    h+=`<circle cx="${X(cp.x)}" cy="${Y(cp.y)}" r="4.5" fill="${cp.o?c.gap:c.acc}" stroke="${c.panel}" stroke-width="1.5"/>`; });
+  // 接触角标注：四点接触时为设计角；轴向推到底时为推到底接触角（真实几何计算值）
+  const lab=(cp,txt)=>{ h+=`<text x="${X(cp.x)+(cp.x>=Bd.x?10:-10)}" y="${Y(cp.y)+(cp.o?-6:16)}" fill="${c.acc}" font-size="13" font-weight="700" text-anchor="${cp.x>=Bd.x?'start':'end'}">${txt}</text>`; };
+  if(mode==='radial'&&pts.length===4){ pts.filter(cp=>cp.x>=Bd.x).forEach(cp=>lab(cp,'α '+(cp.o?state.ae:state.ai)+'°')); }
+  if(mode==='axial'&&Math.abs(tt)>0.99&&isFinite(G.aPush)){ pts.filter(cp=>cp.o).forEach(cp=>lab(cp,'α '+G.aPush.toFixed(2)+'°')); }
+  if(G.s<0){
+    h+=`<text x="${X(Bd.x)}" y="${Y(Bd.y)+30}" fill="${c.gap}" font-size="16" font-weight="800" text-anchor="middle">${t(gmm>0?'negBall':'negRing')}</text>`;
+    h+=`<text x="${X(Bd.x)}" y="${Y(Bd.y)+48}" fill="${c.gap}" font-size="12" font-weight="600" text-anchor="middle">${t('negSub4',{g:fmt(um(G.Gr))})}</text>`;
+  }
+  // 标注
+  h+=`<text x="${X(0)+6}" y="${Y(cuspO)-6}" fill="${c.mut}" font-size="11">${t('cuspL')}</text>`;
+  h+=`<text x="${X(xid)+6}" y="${Y(cuspI)+14}" fill="${c.mut}" font-size="11">${t('cuspL')}</text>`;
+  h+=`<text x="${X(Wr)-6}" y="8" fill="${c.ink}" font-size="13" font-weight="600" text-anchor="end" dominant-baseline="hanging">${t('outerLbl')}</text>`;
+  h+=`<text x="${X(xid+Wr)-6}" y="${H-8}" fill="${c.ink}" font-size="13" font-weight="600" text-anchor="end">${t('innerLbl')}</text>`;
+  h+=`<text x="${X(-Wr)+6}" y="${Y(shO)-8}" fill="${c.mut}" font-size="11">re ${p0.Re.toFixed(3)}</text>`;
+  h+=`<text x="${X(xid-Wr)+6}" y="${Y(shI)+16}" fill="${c.mut}" font-size="11">ri ${p0.Ri.toFixed(3)}</text>`;
+  h+=`<text x="${X(Bd.x)-rBd*k*0.2}" y="${Y(Bd.y)+4}" fill="${c.ink}" font-size="12" text-anchor="end">Dw ${p.Dw.toFixed(4)}</text>`;
+  if(mode==='axial' && V.s>=0) h+=travelDim(X,330,M*V.Ga,xid/M,c,um(G.Ga),M);   // 画在内圈剖面下部空白处
+  h+=`<text x="6" y="14" fill="${c.ink}" font-size="11">${t('tag4',{m:M,k:K})}</text>`;
+  svg.innerHTML=h;
+  // 说明（数值全部来自真实几何）
+  let s;
+  if(G.s<0) s=`<span class="err">${t('n4Neg',{g:fmt(um(G.Gr))})}</span>`;
+  else if(mode==='radial') s=t('n4Radial',{d:fmt(um(-tt*G.s)),n:nI+nE,ni:nI,ne:nE,r:fmt(um(G.s*(1+tt)))});
+  else s=t('n4Axial',{d:fmt(um(tt*G.Ga/2)),Ga:fmt(um(G.Ga)),n:nI+nE,ap:isFinite(G.aPush)?G.aPush.toFixed(2):'—',a:state.ae});
+  if(gmm!==0) s+=`<br><span style="color:var(--accent)">${t('gaugeGhost',{M:M*K})}</span>`;
+  s+=asmLine();
+  note.innerHTML=s;
+}
+
+// ───────── 2P / 4P 切换（两种模式各自保留一套输入值）─────────
+const FIELDS=['De','De_u','De_l','Di','Di_u','Di_l','Dw','Dw_u','Dw_l','G_lo','G_hi','ri','ri_u','ri_l','re','re_u','re_l','Z','mDe','mDi','ai','ae'];
+// 4P 默认值（本地版为实际图纸值；build_public.py 生成公开版时替换为通用示例）
+const DEF4P={De:'30.620',De_u:'0.002',De_l:'-0.002',Di:'46.484',Di_u:'0.002',Di_l:'-0.002',Dw:'7.9375',Dw_u:'0.0005',Dw_l:'-0.0005',G_lo:'15',G_hi:'28',ri:'4.25',ri_u:'0.005',ri_l:'0',re:'4.25',re_u:'0.005',re_l:'0',Z:'9',mDe:'',mDi:'',ai:'25',ae:'25'};
+let bType='2p';
+const typeVals={'2p':null,'4p':{...DEF4P}};
+function applyType(v){
+  v=v==='4p'?'4p':'2p';
+  if(v!==bType){
+    typeVals[bType]=Object.fromEntries(FIELDS.map(id=>[id,$(id).value]));
+    bType=v;
+    const src=typeVals[v]; if(src) FIELDS.forEach(id=>{ if(src[id]!==undefined) $(id).value=src[id]; });
+    gmagAuto=true; $('gauge').value=0;
+  }
+  document.documentElement.dataset.type=bType;
+  document.querySelectorAll('#typeSeg button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.typeV===bType)));
+  store.set('bc-type',bType);
+  applyLang(lang);
+}
+
+
+// 轴向行程尺寸线：内圈左右推到底的总行程 = 轴向游隙（画在内圈剖面内，标注真实值）
+function travelDim(X,y,spanD,xiNow,c,gaUm,M=1){
+  const x1=X(-spanD/2), x2=X(spanD/2), xn=X(xiNow*M);
+  let h=`<line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" stroke="${c.gap}" stroke-width="2"/>`;
+  h+=`<path d="M${x1} ${y-7}v14M${x2} ${y-7}v14" stroke="${c.gap}" stroke-width="2"/>`;
+  h+=`<circle cx="${xn}" cy="${y}" r="4" fill="${c.panel}" stroke="${c.gap}" stroke-width="2"/>`;
+  h+=`<text x="${(x1+x2)/2}" y="${y+20}" fill="${c.gap}" font-size="13" font-weight="800" text-anchor="middle">${t('gaLbl',{v:fmt(gaUm)})}</text>`;
+  h+=`<text x="${(x1+x2)/2}" y="${y-12}" fill="${c.mut}" font-size="11" text-anchor="middle">${t('gaSub')}</text>`;
+  return h;
+}
+let asm=null;   // 最近一次「装配到目标中值」的结果
+function asmLine(){
+  if(!asm || Math.abs(gaugeUm()-asm.g)>1e-9 || asm.type!==state.type) return '';
+  let v;
+  if(state.type==='4p'){ const p=state.p4&&state.p4[caseKey()], r=p&&geo4({...p,Dw:p.Dw+asm.g/1000}); v=r?um(r.Ga):NaN; }
+  else v=caseG();
+  return `<br><b style="color:var(--ok)">${t(state.type==='4p'?'asmNote4':'asmNote2',{g:gs(asm.g),v:fmt(v),lo:state.lo,hi:state.hi})}</b>`;
+}
+function assembleToTarget(){
+  const mid=(state.lo+state.hi)/2;
+  if(!isFinite(mid)) return;
+  let g;
+  if(state.type==='4p'){
+    const p=state.p4&&state.p4[caseKey()]; if(!p) return;
+    const GaAt=gu=>{ const r=geo4({...p,Dw:p.Dw+gu/1000}); return r?um(r.Ga):NaN; };
+    let a=-20,b=20;
+    if(!(GaAt(a)>=mid&&GaAt(b)<=mid)){ $('gnote').innerHTML=`<span class="err">${t('asmNone')}</span>`; return; }
+    for(let k=0;k<50;k++){ const m=(a+b)/2; if(GaAt(m)>=mid) a=m; else b=m; }
+    g=(a+b)/2;
+  } else {
+    const b0=baseG(); if(!isFinite(b0)) return;
+    g=(b0-mid)/2;          // 2P：径向游隙 = 基准 − 2 × 规值
+  }
+  g=Math.round(g/0.05)*0.05;
+  if(g<-6||g>6){ $('gnote').innerHTML=`<span class="err">${t('asmOut',{g:gs(g)})}</span>`; return; }
+  $('gauge').value=g; asm={g,type:state.type};
+  const mode=state.type==='4p'?'axial':'radial';
+  document.querySelector(`input[name=gmode][value=${mode}]`).checked=true;
+  updateGauge(); drawSection(); drawGroove();
+  if(!running['play2']) $('play2').click();
+  if(state.type!=='4p' && !running['play']) $('play').click();
 }
 
 // ───────── 动画 ─────────
@@ -720,6 +1079,7 @@ animator('play','pos',drawSection,'play');
 animator('play2','gpos',drawGroove,'play2');
 $('gauto').onclick=e=>{e.preventDefault(); gmagAuto=true; calc();};
 $('gaugeReset').onclick=()=>{ $('gauge').value=0; updateGauge(); drawSection(); drawGroove(); };
+$('asmBtn').onclick=assembleToTarget;
 
 // ───────── 主题与语言 ─────────
 function applyTheme(v){
@@ -730,6 +1090,9 @@ function applyTheme(v){
 }
 function applyLang(v){
   lang = v==='en'?'en':'zh';
+  // 2P / 4P 两套文案键
+  document.querySelectorAll('[data-i18n-4p]').forEach(el=>{ if(!el.hasAttribute('data-i18n-2p')) el.setAttribute('data-i18n-2p',el.getAttribute('data-i18n')); el.setAttribute('data-i18n',el.getAttribute(bType==='4p'?'data-i18n-4p':'data-i18n-2p')); });
+  document.querySelectorAll('[data-i18n-title-4p]').forEach(el=>{ if(!el.hasAttribute('data-i18n-title-2p')) el.setAttribute('data-i18n-title-2p',el.getAttribute('data-i18n-title')); el.setAttribute('data-i18n-title',el.getAttribute(bType==='4p'?'data-i18n-title-4p':'data-i18n-title-2p')); });
   document.documentElement.lang = lang==='en'?'en':'zh-CN';
   document.title=t('title');
   document.querySelectorAll('[data-i18n]').forEach(el=>{
@@ -749,6 +1112,7 @@ fBtn.onclick=e=>{ e.stopPropagation(); setPop(fpop.hidden); };
 document.addEventListener('click',e=>{ if(!fpop.hidden && !fpop.contains(e.target)) setPop(false); });
 document.addEventListener('keydown',e=>{ if(e.key==='Escape') setPop(false); });
 document.querySelectorAll('#langSeg button').forEach(b=>b.onclick=()=>applyLang(b.dataset.langV));
+document.querySelectorAll('#typeSeg button').forEach(b=>b.onclick=()=>applyType(b.dataset.typeV));
 
 document.querySelectorAll('main input').forEach(el=>el.addEventListener('input',()=>{
   if(el.id==='mag'||el.id==='pos') return drawSection();
@@ -766,6 +1130,7 @@ matchMedia('(prefers-color-scheme: dark)').addEventListener('change',calc);
   if(th==='light'||th==='dark') document.documentElement.dataset.theme=th;
   document.querySelectorAll('#themeSeg button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.themeV===th)));
   applyLang(store.get('bc-lang')||'zh');
+  applyType(store.get('bc-type')||'2p');
 })();
 </script>
 </body>
